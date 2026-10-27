@@ -1,136 +1,67 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface TriangleResult {
-  hypotenuse: number;
-  perimeter: number;
-  area: number;
-}
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-triangle-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule, DecimalPipe],
   template: `
-    <section class="card">
-      <div class="section-label">Варіант 6</div>
-      <h2>Калькулятор прямокутного трикутника</h2>
-
-      <p class="description">
-        Введіть довжини двох катетів для обчислення гіпотенузи, периметра та площі.
-      </p>
-
-      <form (ngSubmit)="calculate()" class="form">
-        <div class="input-grid">
-          <label>
-            Катет a
-            <input
-              type="number"
-              name="legA"
-              step="any"
-              min="0"
-              [(ngModel)]="legA"
-              (ngModelChange)="clearResult()"
-              placeholder="Наприклад, 3"
-            />
-          </label>
-
-          <label>
-            Катет b
-            <input
-              type="number"
-              name="legB"
-              step="any"
-              min="0"
-              [(ngModel)]="legB"
-              (ngModelChange)="clearResult()"
-              placeholder="Наприклад, 4"
-            />
-          </label>
-        </div>
-
-        <button type="submit">Обчислити</button>
-      </form>
-
-      @if (errorMessage) {
-        <p class="error" role="alert">{{ errorMessage }}</p>
-      }
-
-      @if (result; as r) {
-        <div class="results" aria-live="polite">
-          <h3>Результати обчислення</h3>
-
-          <div class="result-grid">
-            <div class="result-item">
-              <span>Гіпотенуза</span>
-              <strong>{{ r.hypotenuse | number: '1.0-4' }}</strong>
-            </div>
-
-            <div class="result-item">
-              <span>Периметр</span>
-              <strong>{{ r.perimeter | number: '1.0-4' }}</strong>
-            </div>
-
-            <div class="result-item">
-              <span>Площа</span>
-              <strong>{{ r.area | number: '1.0-4' }}</strong>
-            </div>
-          </div>
-
-          <div class="formulas">
-            <p>c = √(a² + b²)</p>
-            <p>P = a + b + c</p>
-            <p>S = (a × b) / 2</p>
-          </div>
-        </div>
-      }
-    </section>
+    <h2>Периметр і площа прямокутного трикутника</h2>
+    <label>Катет a: <input type="number" [(ngModel)]="a" (ngModelChange)="clear()" /></label>
+    <label>Катет b: <input type="number" [(ngModel)]="b" (ngModelChange)="clear()" /></label>
+    <button (click)="calculate()">Обчислити</button>
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
+    @if (hypotenuse !== null && perimeter !== null && area !== null) {
+      <p>Гіпотенуза: {{ hypotenuse | number: '1.0-4' }}</p>
+      <p>Периметр: {{ perimeter | number: '1.0-4' }}</p>
+      <p>Площа: {{ area | number: '1.0-4' }}</p>
+    }
   `,
 })
 export class TriangleCalculatorComponent {
-  legA: number | null = null;
-  legB: number | null = null;
+  a: number | null = null;
+  b: number | null = null;
+  hypotenuse: number | null = null;
+  perimeter: number | null = null;
+  area: number | null = null;
+  error = '';
 
-  result: TriangleResult | null = null;
-  errorMessage: string = '';
-
-  calculate(): void {
-    this.clearResult();
-
-    const a: number | null = this.legA;
-    const b: number | null = this.legB;
-
-    if (
-      a === null ||
-      b === null ||
-      !Number.isFinite(a) ||
-      !Number.isFinite(b) ||
-      a <= 0 ||
-      b <= 0
-    ) {
-      this.errorMessage = 'Введіть два додатні числа для довжин катетів.';
-      return;
-    }
-
-    const hypotenuse: number = Math.hypot(a, b);
-    const perimeter: number = a + b + hypotenuse;
-    const area: number = (a * b) / 2;
-
-    if (!Number.isFinite(hypotenuse) || !Number.isFinite(perimeter) || !Number.isFinite(area)) {
-      this.errorMessage = 'Занадто великі значення катетів.';
-      return;
-    }
-
-    this.result = {
-      hypotenuse,
-      perimeter,
-      area,
-    };
+  clear(): void {
+    this.hypotenuse = null;
+    this.perimeter = null;
+    this.area = null;
+    this.error = '';
   }
 
-  clearResult(): void {
-    this.result = null;
-    this.errorMessage = '';
+  calculate(): void {
+    this.clear();
+
+    if (
+      this.a === null ||
+      this.b === null ||
+      !Number.isFinite(this.a) ||
+      !Number.isFinite(this.b) ||
+      this.a <= 0 ||
+      this.b <= 0
+    ) {
+      this.error = 'Введіть два додатні числа.';
+      return;
+    }
+
+    const c = Math.hypot(this.a, this.b);
+    const p = this.a + this.b + c;
+    const s = (this.a * this.b) / 2;
+
+    if (![c, p, s].every(Number.isFinite)) {
+      this.error = 'Занадто великі значення.';
+      return;
+    }
+
+    this.hypotenuse = c;
+    this.perimeter = p;
+    this.area = s;
   }
 }
