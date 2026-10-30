@@ -1,0 +1,16 @@
+
+<main>
+  <h1>Практична робота №4</h1>
+  <p>Варіант 6: робота з текстом</p>
+
+  <label for="sourceText">Введіть текст:</label>
+
+  <textarea
+    id="sourceText"
+    rows="3"
+    [(ngModel)]="text"
+    placeholder="Введіть будь-який текст"
+  ></textarea>
+
+  <app-child [text]="text"></app-child>
+</main>
