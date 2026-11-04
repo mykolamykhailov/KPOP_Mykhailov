@@ -1,0 +1,19 @@
+
+<section class="favorites">
+  <h2>Вибрані персонажі ({{ characters.length }})</h2>
+
+  @if (characters.length === 0) {
+    <p>Вибраних персонажів поки немає.</p>
+  } @else {
+    <ul>
+      @for (character of characters; track $index) {
+        <li>
+          <span>{{ character.fullName }}</span>
+          <button type="button" [disabled]="disabled" (click)="removeCharacter(character)">
+            Видалити
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -1,0 +1,6 @@
+
+.favorites { margin-top: 28px; border-top: 1px solid #ddd; padding-top: 12px; }
+ul { list-style: none; padding: 0; }
+li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 0; }
+li + li { border-top: 1px solid #eee; }
+button { padding: 5px 9px; cursor: pointer; }

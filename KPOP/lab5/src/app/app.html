@@ -1,0 +1,59 @@
+
+<main>
+  <h1>Практична робота №5</h1>
+  <p>Варіант 6. Персонажі Гаррі Поттера (PotterAPI)</p>
+
+  @if (loading) {
+    <p>Завантаження персонажів...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+    <button type="button" (click)="loadCharacters()">Повторити</button>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+        <tr><th>Повне ім'я</th><th>Нікнейм</th><th>Факультет</th><th>Дата народження</th><th>Вибране</th></tr>
+        </thead>
+        <tbody>
+          @for (character of characters; track $index) {
+            <tr (click)="openDetails(character)">
+              <td>{{ character.fullName }}</td>
+              <td>{{ character.nickname || '—' }}</td>
+              <td>{{ character.hogwartsHouse || '—' }}</td>
+              <td>{{ character.birthdate || '—' }}</td>
+              <td>
+                <button type="button" [disabled]="isFavorite(character)"
+                        (click)="$event.stopPropagation(); addFavorite(character)">
+                  {{ isFavorite(character) ? 'Додано' : 'Додати' }}
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5">API не повернуло персонажів.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <app-favorites [characters]="favorites" (remove)="removeFavorite($event)"></app-favorites>
+
+  @if (selected; as character) {
+    <div class="backdrop" (click)="closeDetails()">
+      <section class="popup" role="dialog" aria-modal="true" aria-label="Інформація про персонажа"
+               (click)="$event.stopPropagation()">
+        <button type="button" (click)="closeDetails()">Закрити ✕</button>
+        <h2>{{ character.fullName }}</h2>
+        @if (character.image) {
+          <img [src]="character.image" [alt]="character.fullName" />
+        }
+        <p><b>Нікнейм:</b> {{ character.nickname || '—' }}</p>
+        <p><b>Факультет:</b> {{ character.hogwartsHouse || '—' }}</p>
+        <p><b>Дата народження:</b> {{ character.birthdate || '—' }}</p>
+        <p><b>Актор:</b> {{ character.interpretedBy || '—' }}</p>
+        <p><b>Діти:</b></p>
+        <pre>{{ character.children | json }}</pre>
+      </section>
+    </div>
+  }
+</main>
